@@ -6,3 +6,5 @@ lazy val root = (project in file("."))
   .settings(
     name := "RedditScalaWebScraper"
   )
+libraryDependencies += "org.seleniumhq.selenium" % "selenium-java" % "3.141.59"
+libraryDependencies += "net.ruippeixotog" %% "scala-scraper" % "2.2.0"
