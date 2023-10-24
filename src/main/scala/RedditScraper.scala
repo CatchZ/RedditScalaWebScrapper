@@ -3,6 +3,11 @@ import org.openqa.selenium.chrome.ChromeDriver
 import net.ruippeixotog.scalascraper.browser.JsoupBrowser
 import net.ruippeixotog.scalascraper.dsl.DSL._
 import net.ruippeixotog.scalascraper.scraper.ContentExtractors.elements
+import org.openqa.selenium.support.ui.WebDriverWait
+import org.openqa.selenium.support.ui.ExpectedConditions
+
+
+
 
 object RedditScraper {
 
@@ -18,13 +23,14 @@ object RedditScraper {
       .executeScript("return document.body.scrollHeight")
       .asInstanceOf[Long]
 
-    // Keep scrolling until we have 300 entries or the page stops loading new entries
+    val wait = new WebDriverWait(driver, 15)
+
+
     while (getNumberOfEntries(driver) < 300 && previousHeight != currentHeight) {
       driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
         .executeScript("window.scrollTo(0, document.body.scrollHeight);")
 
-      // Pause to let the page load. This can be improved by using WebDriverWait.
-      Thread.sleep(3000)
+      wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".Post")))
 
       previousHeight = currentHeight
       currentHeight = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
@@ -38,14 +44,18 @@ object RedditScraper {
     val browser = JsoupBrowser()
     val doc = browser.parseString(pageSource)
 
-    // Extract subreddit hrefs
-    val subredditElements = doc >> elements("a[href^='/r/']")
-    val subreddits = subredditElements.map(element => element.attr("href")).toList
+
+    val subredditLinks = (doc >> elements("a[href^='/r/']")).toList
+    val subreddits: List[String] = subredditLinks.map(element => element.attr("href"))
+    val distinctSubreddits = subreddits.distinct
+
+
+
 
     subreddits.take(300).foreach(println)
   }
 
   def getNumberOfEntries(driver: WebDriver): Int = {
-    driver.findElements(By.cssSelector("a[href^='/r/']")).size()
+    driver.findElements(By.cssSelector(".Post")).size()
   }
 }
