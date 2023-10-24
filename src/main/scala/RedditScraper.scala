@@ -11,26 +11,33 @@ import org.openqa.selenium.support.ui.ExpectedConditions
 
 object RedditScraper {
 
+  val entrysToCollect = 300
+  val crawlingTargetUrl = "https://www.reddit.com/r/all/hot/"
+  val webDriverLocation = "C:\\Users\\Max\\chromedriver-win64\\chromedriver.exe"
+  val webDriverType = "webdriver.chrome.driver"
+  val scrappingTargetElement ="a[href^='/r/']"
+  val waitForContantTimeout = 30
+
+
+
   def main(args: Array[String]): Unit = {
-    System.setProperty("webdriver.chrome.driver", "C:\\Users\\Max\\chromedriver-win64\\chromedriver.exe")
+    System.setProperty(webDriverType, webDriverLocation)
 
     val driver: WebDriver = new ChromeDriver()
 
-    driver.get("https://www.reddit.com/r/all/hot/")
+    driver.get(crawlingTargetUrl)
 
     var previousHeight: Long = 0
     var currentHeight: Long = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
       .executeScript("return document.body.scrollHeight")
       .asInstanceOf[Long]
 
-    val wait = new WebDriverWait(driver, 15)
 
-
-    while (getNumberOfEntries(driver) < 300 && previousHeight != currentHeight) {
+    while (getNumberOfEntries(driver) < entrysToCollect&& previousHeight != currentHeight) {
       driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
         .executeScript("window.scrollTo(0, document.body.scrollHeight);")
 
-      wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".Post")))
+      Thread.sleep(waitForContantTimeout)
 
       previousHeight = currentHeight
       currentHeight = driver.asInstanceOf[org.openqa.selenium.JavascriptExecutor]
@@ -45,17 +52,17 @@ object RedditScraper {
     val doc = browser.parseString(pageSource)
 
 
-    val subredditLinks = (doc >> elements("a[href^='/r/']")).toList
+    val subredditLinks = (doc >> elements(scrappingTargetElement)).toList
     val subreddits: List[String] = subredditLinks.map(element => element.attr("href"))
     val distinctSubreddits = subreddits.distinct
 
 
 
 
-    subreddits.take(300).foreach(println)
+    distinctSubreddits.take(entrysToCollect).foreach(println)
   }
 
   def getNumberOfEntries(driver: WebDriver): Int = {
-    driver.findElements(By.cssSelector(".Post")).size()
+    driver.findElements(By.cssSelector(scrappingTargetElement)).size()
   }
 }
