@@ -1,5 +1,6 @@
 # RedditScalaWebScrapper
 
+Prototyp für einen Webscrapper.
 Scrapt die Reddit /r/all Seite und
 gibt alles gefundenen Subreddits ohne dublikate als Liste wieder.
 Dabei werden Selenium und Scala-Scraper verwendet.
@@ -27,7 +28,7 @@ Dabei werden Selenium und Scala-Scraper verwendet.
 1. Klone das Repository auf deinen lokalen Computer.
 2. herunterladen eines Browserdriver
 3. im Wahlverzeichnis entpacken
-4. setzen der Browserdrivertyp und Browserdriverlokation Variable
+4. setzen der Browserdrivertyp und Browserdriverlokation Variable im RedditScrappe Objekt
 
 Downloadlocation für denn Browserdriver,
 Chrom recommended:
