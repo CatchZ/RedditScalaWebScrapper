@@ -2,6 +2,7 @@
 
 Scrapt die Reddit /r/all Seite und
 gibt alles gefundenen Subreddits ohne dublikate als Liste wieder.
+Dabei werden Selenium und Scala-Scraper verwendet.
 
 
 
